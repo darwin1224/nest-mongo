@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    volumes:
+      - ./:/var/www/html
+    environment:
+      - NODE_ENV=development
+    ports:
+      - ${NODE_PORT}:${NODE_PORT}
+      - ${NODE_INSPECT_PORT}:${NODE_INSPECT_PORT}
+    depends_on:
+      - database
+    tty: true
+    restart: always
+    networks:
+      - app
+
+  database:
+    image: mongo:4.0.5-xenial
+    container_name: database
+    volumes:
+      - app:/data/db
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}
+    tty: true
+    restart: always
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  app:
+    driver: local
